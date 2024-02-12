@@ -1,0 +1,10 @@
+Not Important but may ask in interview 
+
+
+1. why we need EKS ?
+
+   Let's look at some scenarios for implementing EKS. Kubernetes is a good fit for applications composed of common components, such as an HTTP server, web or mobile APIs, business logic fronting a database, and workers that pull tasks from a queue or are triggered by events. Kubernetes is also great for orchestrating applications that use multiple containers, as well as scaling containers up and down to meet availability and performance requirements as demand changes         
+   
+    For example, suppose you configured Kubernetes to keep five instances of a pod running. If one pod fails, it's simply removed and replaced with a new pod, matching the definition you provided. In other words, it's designed for failure. Recovery from failure happens through an automated process with no human intervention needed.                                 
+	
+	

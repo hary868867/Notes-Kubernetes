@@ -1,0 +1,89 @@
+Kubernetes nigel 
+
+1 & 2. OVERVIEW & OUTLINE 
+what we learn here is... we'll deploy an application to Kubernetes, expose it to the internet, scale it up and down, test self healing, and perform a zero downtime rolling update and a version rollback.         
+We'll look at how to deploy apps on Kubernetes using pods, we'll expose an app to the network with services. In fact, we'll even hook it into a cloud load balancer for access over the internet. Then we'll round things out with scaling, self‑healing, zero‑downtime, rolling updates, and a version rollback
+So, Let's start.              
+
+3. WHAT IS KUBERNETES
+
+a. if legacy apps had tens or hundreds of virtual machines, there's a pretty solid chance that the modernized containerized apps are going to have thousands of containers. And if that's the case, I can tell you right now you're going to need something to help you manage them. Well, say hello to Kubernetes. Now another thing I want to mention is that we've kind of abandoned this traditional view of the cloud and of your data center as a collection of computers in favor of the more powerful idea that the cloud or your data center is a computer like a giant one. So if we look at a computer, and I'm keeping it high level, but it's got processing cores, high speed memory, slower persistent storage, and networking. And for the most part, application developers are not bothered which CPU core, for instance, or memory DIMM that they're application is using. We just let the operating system look after all of that. And you know what? It works an absolute treat, and the world of application development thrives on this principle. So it's only natural to take it to the next level and treat your cloud or your data center in the same way. So what am I saying? Well, instead of caring which VM or compute instance to run all of your application bits and pieces on, instead of that, let's have something like a cloud OS to take care of all of that for us. Well, I'm sure you get this. Say hello to Kubernetes.   
+   So what I'm saying is we can basically say hey, Kubernetes, I've got this app, and it consists of whatever, these different services. And you know what? Just run it for me, please. And Kubernetes does that. It goes away and does all the hard stuff for us. Now, I don't know, if you like analogies, it's a bit like sending packages via a courier service. So in that situation, we pack up whatever we're sending, obviously according to the courier's packing specifications, we label it with some information, and we just hand it over to the courier, and that's us done. All the decisions of which routes to use or routes and which planes and highways and all that kind of jazz, all outsourced to the courier. Well, it's kind of the same with Kubernetes. We package our apps as containers, describe them in a declarative manifest, and just give it to Kubernetes             
+   Then, of course, behind the scenes, Kubernetes does all the hard work of look whatever, deciding what nodes to run stuff on and how to pull and verify images and start containers and attach to networks and all that complexity, right? I'm not bothered. Kubernetes just takes care of it.       
+
+4. KUBERNETES ARCHITECTURE 
+   
+5. WORKING WITH PODS 
+
+a. Alright, the process for building and deploying an app to Kubernetes is pretty much this. You start out with app code, build it into a container image, store that in a repo, define it in a Kubernetes manifest, and then post that to the API server. And at that point, that what's done. Kubernetes, then does the rest       
+b. Create a docker file, build it into image and push it in to the repository, its either the docker repository, ECR, ACR or any other cloud kubernetes service 
+c. Now, we need to create a pod manifest file, in the github, you already forked getting-started-k8's of nigel, its in that, understand the contents of it 
+   contents of it are - apiVesrion( didnt get this ).. labels( labels are just like key value pairs ).. spec ( specifications of container shud be given here, name of container, port it listens & the image name shud be given here, defaultly it takes image from docker hub, but if its in ECR or ACR, we need to give dns at front ).. other than the spec the details that are given are the pod details in which container shud run, like metadata, kind, api version .. all these are pod specifications        
+   now we need the deploy the pod.
+d. after writing the above pod file.. go to the place where the pod file is and run the below command 
+       kubectl apply -f pod.yml - this will create the pod with the container
+       kubectl get pods --watch - shows the kubernetes pods 
+       kubectl get pods -o wide - shows the extra columns of pods
+       kubectl describe pods podname - gives all the information of pod 
+       kubectl delete pod podname - deletes the pod
+       kubectl delete -f podfile.yml - delete pod file which also deletes pods 
+       kubectl expose pod podname --name=servicename --target-port=8080 --type=NodePort - exposes pod to the service 
+       kubectl get svc - lists the services
+   Nodes are virtual machines or cloud instances running Windows or Linux. Pods are our applications. So Pods run on the nodes. In fact, think of Pods as apps and nodes as infrastructure.        
+e. in this, we just have an intro to the multipod file of kubernetes, its in the github, check it.. more on this is covered on separate course.
+
+6.KUBERNTES SERVICES
+
+a. Alright, then. In this module, we're going to look at the Kubernetes service object, so, the way in Kubernetes to expose applications, both on the network and to the outside world   
+b. Kubernetes Services are mentioned in the services.yml file.. but, first of all, why do we need services.. Services are needed to have end point to the pods so that we can talk to the pods through that end point ( we must need end point for all pods as pods are unrelaible meaning we dont know when they gonna break )
+   Kubernetes Services End point  has front end & back end...The front end is a name, IP, and a port ( IP is the cluster IP which will be automatically assigned and will never change, Cluster Ip is used internally by pods to communicate ... name is the name of the service, and that gets registered with DNS. So, backing up a bit again, every cluster gets an internal DNS service  )  &   back end is a way for the service to know which Pods to send traffic onto ( simply load balancing ) 
+   * in the kubernetes service file ( see the github ).. the imp thing is 'spec', in spec we need to give 'type' 'ports' 'selector'... 'type'- in type we have NodePort, ClusterIP & Load balancer... nodeport means with that port we can access pods from outside, load balancer means we will access pods with cloud load balancer, cluster ip is just for internal communication of pods.                                                                    
+   in 'ports'- we need to give, port(cluster port ), target port ( container port ) & nodePort ( port of the node in cluster ).. 'selector'- we need to give the same name which we given in the label of pod manifest file 
+      
+
+7.KUBERNETES DEPLOYMENTS 
+
+a. in the github, there is a deployment file, check that & understand the contents of it 
+   the contents are apiVersion, kind, metadata, spec.... apiversion & kind are asusual, metadata consists of labels,
+   spec contains replicas, template & spec.... replicas is the that controls the self healing and roll back of deployments, means if we give 5 to replicas in the file, replicas will take care that there are 5pods always running no matter what, if one of the pod got broke, it instantly creates a replica of it 
+   template & spec consists of the pod & container data 
+b. all the details shud be given in the deployment file, then 'kubectl apply -f filename' will deploy the appimage in the cluster   
+   what is meant by end point objects?? ( basically, when we create a service, it automatically creats some end points objects, these are just a representation of healthy pods running on the service ) .. commands related to endpoints.. 'kubectl get ep' lists the endpoints, 'kubectl describe ep nameofendpoint' describes the end pointsc.
+   kuberntes can self heal if one of the pod or node deleted accidentally. it make sure the number of nodes we given at time of creating a cluster and number of pods we given in replicas shud be intact 
+c. in the deployment file, we can give strategy and rolling update so that whenever we update the deployment file, instead of deleting and creating all replicas at once we can give max surge and maxUnavailable 
+   suppose we updated the image in deploy file and executed but we wanted the old one as it better, we csn do roll back using the following commands 
+   'kubectl get rs'  -  gives the replicas that are presently running and also the previous ones, basically all replicas 
+   'kubectl rollout history deploy nameofdeploy'  -  shows how many revisions we have had through deployment file 
+   'kubectl rollout undo deploy nameofdeploy --to-revision=1'  -  rolls back to the previous version of the deployment file 
+   
+   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+EXTRA POINTS 
+
+
+Well, generally speaking here, containers make our old scalability challenges seem pretty laughable.
+
+pod ip address that is shown when typed the command 'kubectl get pods' is actually the internal cluster IP on the pod network

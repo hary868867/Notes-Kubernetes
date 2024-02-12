@@ -1,0 +1,40 @@
+Ned Bellavance Globomantics
+
+3.2 - core components - 
+      core components of vpc are subnets, route tables, endpoints, gateways, security groups, network acl's.
+      subnets are where resources are placed & route tables are the ones how the resources talk to other things in vpc or things outside of vpc.
+	  endpoints are used by vpc to talk to services with in aws so that it will not go to internet and come back.
+	  gate ways.. there are many types in gateways such as NAT gateways, internent gateways and enpoint gateways, more about it in its module.
+	  networks acl's.. about this in its own module.
+	  
+3.3 - Globomantics
+      globomantics now has basic vpc setup for developers in us-east-1 region, now they want to expand beyond that
+	  requirements are high availability for the apps, hybrid connectivity, scability.
+	  hybrid connectivity means.. globomantics is not moving everything to aws, there will still be on premise datacentres with apps running on them, so we need to create hybrid connectivity so that apps on aws can talk to apps on On-premise data centers         
+	  scalability means.. globomantics doesnt know which apps demand goes up or which app will go down, so they want scaling in or scaling out of apps based on the demand, so scability is required
+	  
+3.4 - subents and AZ's
+      globomantics is using three AZ's from us-east-1 region & a vpc is created for that region
+      each AZ has one public subnet and one private subnet pinned to it, so totally 6 subnets
+      ( inter zone traffic & inter zone traffic - if the subnets from same AZ talk to each other, it is inter zone traffic vice varsa  it is intra zone )	
+
+3.5 - IPv4 Addressing
+      when creating a vpc we have to create a CIDR range for that vpc to use and it can be of size /16 to /28 ( its /16 to /28 becoz vpc range is restricted to that )
+      when vpc is created the five address are reserved for the subnets 
+	  subnets cannot overlap. cannot be modified,
+     
+3.6 - Globomantics VPC design
+      they have one vpc with CIDR range 10.0.0.0/16
+      they have 5 subnets with ipv4 addressing ( 10.0.1.0/24 to 10.0.5.0/24 )
+	  
+3.7 - Adding CIDR range to vpc
+      subnets cannot overlap, subnet CIDR ranges cannot be altered, we can add new 
+	  now, globomantics want to add new CIDR range.. someone suggested 192.168.0.0/24, another suggested 10.0.0.0/24.. both are wrong as the first one is not the same family & second one is over lapping CIDR from what they are already using, so we suggested 10.1.0.0/24 which is correct as it is not overlapping and same family CIDR range             
+	  how to add it ?.. ned did it through aws cli, the commands are available in git of ned's networking repository.. its in m3.sh file.. check it 
+
+3.8 - adding subnet to vpc
+      now, created a subnet from the additional CIDR block created.. check the commands from m3.sh file 
+    
+3.9 - IPv6 addressing 
+      its dual stack with IPv4, global unicast address /56 per vpc, each subnet recieves /64	
+	  

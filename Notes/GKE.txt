@@ -1,0 +1,129 @@
+GKE
+
+
+open GCP 
+Active cloud shell 
+
+gcloud auth list
+gcloud config list project
+gcloud config set compute/zone us-central1-f                       ( setting the default zone )
+gcloud services enable container.googleapis.com                    ( to enable the Container Registry API ) ( CRA means an api which is used to communicate with container registry ) 
+gcloud container clusters create fancy-cluster --num-nodes 3       ( creates a cluster named fancy-cluster with 3 nodes )
+gcloud compute instances list                                      ( gives the information of nodes created ) 
+
+
+Find your Kubernetes cluster and related information in the Google Cloud console...  Click the Navigation menu (Navigation menu icon) -> Kubernetes Engine -> Clusters...  You should see your cluster named fancy-cluster.
+
+-----
+
+Since this is an existing website, you just need to clone the source, so you can focus on creating Docker images and deploying to GKE                             :  git clone https://github.com/googlecodelabs/monolith-to-microservices.git
+You will also install the NodeJS dependencies so you can test your application before deploying                                                                   :  cd ~/monolith-to-microservices
+                                                                                                                                                                     ./setup.sh
+Ensure you are running Cloud Shell with the latest version of npm                                                                                                 :  nvm install --lts
+
+-----
+
+Google Cloud Build will compress the files from the directory and move them to a Google Cloud Storage bucket. The build process will then take all the files from the bucket and use the Dockerfile to run the Docker build process. Since we specified the --tag flag with the host as gcr.io for the Docker image, the resulting Docker image will be pushed to the Google Cloud Container Registry.
+
+First, to make sure you have the Cloud Build API enable, run the following command                                                                                :  gcloud services enable cloudbuild.googleapis.com
+Run the following to start the build process                                                                                                                      :  cd ~/monolith-to-microservices/monolith
+                                                                                                                                                                     gcloud builds submit --tag gcr.io/${GOOGLE_CLOUD_PROJECT}/monolith:1.0.0 .
+-----
+
+To deploy your application, create a Deployment resource. The Deployment manages multiple copies of your application, called replicas, and schedules them to run on the individual nodes in your cluster. For this lab the Deployment will be running only one Pod of your application. Deployments ensure this by creating a ReplicaSet. The ReplicaSet is responsible for making sure the number of replicas specified are always running.           
+
+The kubectl create deployment command you'll use next causes Kubernetes to create a Deployment named monolith on your cluster with 1 replica                      :  kubectl create deployment monolith --image=gcr.io/${GOOGLE_CLOUD_PROJECT}/monolith:1.0.0																																		  
+( there is deployement file in k8s folder, check that )      checking the deployement                                                                             :  kubectl get all
+Note: If you are seeing errors or statuses you do not expect, you can debug your resources with the following commands to see detailed information about them     :  kubectl describe pod monolith
+                                                                                                                                                                     kubectl describe pod/monolith-7d8bc7bf68-2bxts
+                                                                                                                                                                     kubectl describe deployment monolith
+                                                                                                                                                                     kubectl describe deployment.apps/monolith
+At the very end of the output, you will see a list of events that give errors and detailed information about your resources.
+
+-----
+
+You have deployed your application on GKE, but there isn't a way to access it outside of the cluster. By default, the containers you run on GKE are not accessible from the Internet because they do not have external IP addresses. You must explicitly expose your application to traffic from the Internet via a Service resource. A Service provides networking and IP support to your application's Pods. GKE creates an external IP and a Load Balancer for your application.    
+
+Run the following command to expose your website to the Internet   :  kubectl expose deployment monolith --type=LoadBalancer --port 80 --target-port 8080
+
+GKE assigns the external IP address to the Service resource, not the Deployment.
+If you want to find out the external IP that GKE provisioned for your application, you can inspect the Service with the kubectl get service command:  kubectl get service
+
+Once you've determined the external IP address for your application, copy the IP address, then point your browser the URL (such as "http://203.0.113.0") to check if your application is accessible.
+You should see the same website you tested earlier. You now have your website fully running on Kubernetes!
+
+----
+
+Now that your application is running in GKE and is exposed to the internet, imagine your website has become extremely popular! You need a way to scale your application to multiple instances so it can handle all this traffic. Next you will learn how to scale the application up to 3 replicas.
+
+In Cloud Shell, run the following command to scale you deployment up to 3 replicas: kubectl scale deployment monolith --replicas=3
+Verify the Deployment was scaled successfully                                     : kubectl get all
+
+----
+
+cd ~/monolith-to-microservices/react-app/src/pages/Home
+mv index.js.new index.js
+
+cd ~/monolith-to-microservices/react-app
+npm run build:monolith
+
+
+
+
+
+
+
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+gcloud container clusters create jenkins-cd --num-nodes 2 --scopes "https://www.googleapis.com/auth/projecthosting,cloud-platform"
+
+
+
+git config --global user.email harikrishnamelambala@gmail.com
+git config --global user.name hary867
+
+kubectl create -f deployments/hello.yaml
+
+kubectl create secret generic tls-certs --from-file tls/
+kubectl create configmap nginx-frontend-conf --from-file=nginx/frontend.conf
+kubectl create -f deployments/frontend.yaml
+kubectl create -f services/frontend.yaml
+
+
+
+
+kubectl exec -it <pod-name> -- /bin/sh
+kubectl get namespaces
+kubectl delete service <service-name>
+kubectl apply -f <filename.yaml>
+kubectl port-forward <pod-name> <local-port>:<pod-port>
+kubectl exec -it <pod-name> -- /bin/sh
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

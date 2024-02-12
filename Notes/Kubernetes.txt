@@ -1,0 +1,41 @@
+Kubernetes
+
+------------
+kubectl - kubernetes command line interface, with kubectl you can manage kubernetes cluster 
+downloading kubectl  - see screenshot that took 
+
+kubernetes install - we can do it on the desktop by installing docker or we can do it in cloud, preferable to go in to cloud.
+now, install linode cloud ( there are many other cloud providers too, nigel is using linode cloud ) 
+go to the kubernetes option in linode cloud - give cluster label, region, kubernetes version & add node pools ( these are worker nodes ), master nodes automatically controlled by cloud provider 
+now, click enter after selecting all this, it will generate kubeconfig, paste that data in to the local kube config file so that the kubernetes cloud cluster will talk to the kubectl.
+
+------------
+
+define the kubernetes manisfest file from the image container registry & post that to the kubernetes API server ... kubernetes will take care of the rest
+there is screenshot of kubernetes manifest file ..check that
+
+------------
+there are three yml files written by nigel, they are pod file, service file and deployment file 
+
+
+------------
+
+after writing the above pod file.. go to the place where the pod file is and run the below command 
+kubectl apply -f pod.yml - this will create the pod with the container
+kubectl get pods --watch - shows the kubernetes pods 
+kubectl get pods -o wide - shows the extra columns of pods
+kubectl describe pods podname - gives all the information of pod 
+kubectl delete pod podname - deletes the pod
+kubectl delete -f podfile.yml - delete pod file which also deletes pods 
+kubectl expose pod podname --name=servicename --target-port=8080 --type=NodePort - exposes pod to the service 
+kubectl get svc - lists the services
+
+
+------------
+
+Kubernetes theory 
+
+
+
+
+

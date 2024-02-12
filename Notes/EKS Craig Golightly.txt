@@ -1,0 +1,32 @@
+EKS Craig Golightly
+
+
+what craig is telling is that many courses offer just basics, but he will make us learn more than that, he says he will teach how application runs in real time 
+so the infrastructure we need is.... AWS account and any one region, a VPC 
+
+CREATING STAGING ENVIRONMENT FOR EKS 
+
+a. Configuring AWS Account 
+   You'll need an IAM user for the account where you want to build your EKS cluster. Create a programmatic user and download the access and secret values for that user.  
+   For this demo, we'll log into the staging AWS account to create an IAM user, and download the keys that we'll need to run the Terraform scripts to build our EKS infrastructure     
+b. Terraform cloud set up 
+   go to terraform.io/cloud ... create account... give username and mailid ... its created and go to start from scratch.. give an unique oraganization name..
+   now, we have to create a two workspaces one for eks and vpc
+   select one workflow( selected here is API driven work flow)..now, provide a workspace name related to eks 
+   terraform is opened.. there will be variables option, go to that, give environment varibles ( those are the AWS access key , secret key you created on AWS account on IAM terraform user ) 
+   now, go to settings, select general, select remote sharing option, select share globally.. this means the new workspace created is shared with other workspaces in the organization
+   now, create another workspace
+   asusual select the workflow, give name related to vpc , and rest is same with above
+   now, go to settings, go to API tokens, create one user token and save the token name & password safely, we need to use that to link with git 
+   in git, create one privae repository, go to settings, secrets,actions, new repository secret, add token created in terraform 
+
+c. Triggering infrastructure creation with code 
+   
+   
+   
+---------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+IMP POINTS 
+
+generally for a project there will development, staging and production environments some organizations will have one aws account for each stage linked to one root account  ...or different like there staging may run in aws cloud, development may run in azure cloud, or production one may run in on-premise data centres                       
+
