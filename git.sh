@@ -1,7 +1,7 @@
 #!/bin/bash
 
 git remove remote origin
-commit='first push of everything'
+commit='Second push of everything'
 reponame='Kubernetes'
 url='https://github.com/hary8678/Notes-$reponame.git'
 git init
