@@ -1,12 +1,13 @@
 #!/bin/bash
 
-git remove remote origin
-commit='Second push of everything'
-reponame='Kubernetes'
-url='https://github.com/hary8678/Notes-$reponame.git'
+git remote remove origin
+commit='third push of everything'
+#reponame=''
+url="https://github.com/hary8678/Notes-$1.git"
 git init
 git add .
 git commit -m "$commit"
 git branch -M main
 git remote add origin $url
 git push -u origin main
+
